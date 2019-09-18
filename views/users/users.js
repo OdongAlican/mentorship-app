@@ -33,33 +33,32 @@ const users = [
   },
 ];
 
-// get all users
-userRouter.get('/users', (req, res) => {
-  res.send(users);
-});
-
-// user sign up
-userRouter.post('/users', (req, res) => {
-  if (req.body.password.length < 5
+// get all users or user sign up
+userRouter.route('/users')
+  .get((req, res) => {
+    res.send(users);
+  })
+  .post((req, res) => {
+    if (req.body.password.length < 5
     || req.body.lastName.length < 3
     || req.body.firstName < 3
     || !req.body.password
     || !req.body.firstName
     || !req.body.lastName) {
-    return res.status(404).send('Bad Request');
-  }
+      return res.status(404).send('Bad Request');
+    }
 
-  const user = {
-    id: users.length + 1,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    password: req.body.password,
+    const user = {
+      id: users.length + 1,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      password: req.body.password,
 
-  };
+    };
 
-  users.push(user);
-  res.send(users);
-});
+    users.push(user);
+    res.send(users);
+  });
 
 // user can login
 userRouter.post('/auth/login', (req, res) => {

@@ -32,7 +32,6 @@ sessionRouter.post('/mentorshipsessions', (req, res) => {
   res.send(mentorshipSessions);
 });
 
-
 sessionRouter.put('/mentorshipsessions/:id', (req, res) => {
   // eslint-disable-next-line radix
   const mentorshipSession = mentorshipSessions.find((sess) => sess.id === parseInt(req.params.id));
