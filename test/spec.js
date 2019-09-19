@@ -1,3 +1,5 @@
+
+/* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 /* eslint-disable import/no-unresolved */
@@ -43,6 +45,57 @@ describe('[users]', () => {
         */
         // chai(singleUsers).to.eql(user);
         done();
+      });
+  });
+  it('should delete a user', (done) => {
+    user = {
+      id: '3',
+      firstName: 'Alican',
+      lastName: 'Amulla',
+      password: '123456',
+    };
+    request(app)
+      .post('/users')
+      .send(user)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, resp) => {
+        const user = resp.body;
+        request(app)
+          .delete(`/users/${user.id}`)
+          // eslint-disable-next-line no-shadow
+          .end((err, resp) => {
+            expect(resp.body).to.eql(user);
+            done();
+          });
+      });
+  });
+  it('should update a user', (done) => {
+    user = {
+      id: '4',
+      firstName: 'Alican',
+      lastName: 'Amulla',
+      password: '123456',
+    };
+    request(app)
+      .post('/users')
+      .send(user)
+      .set('Accept', 'application/json')
+      .end((err, resp) => {
+        const user = resp.body;
+        request(app)
+          .put(`/users/${user.id}`)
+          .send({
+            lastName: 'odong',
+          })
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, resp) => {
+            expect(resp.body.lastName).to.equal('odong');
+            done();
+          });
       });
   });
 });
