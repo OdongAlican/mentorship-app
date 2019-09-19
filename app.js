@@ -15,9 +15,11 @@ app.use('/api', mentorRouter);
 app.use('/api', userRouter);
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`App running on port ${PORT}`);
 });
+
+module.exports = app;
