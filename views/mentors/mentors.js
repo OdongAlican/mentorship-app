@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 /* eslint-disable eol-last */
 /* eslint-disable consistent-return */
 const mentorRouter = require('express').Router();
@@ -63,6 +64,58 @@ mentorRouter.route('/mentors/:id')
 
     const index = mentors.indexOf(mentor);
     mentors.splice(index, 1);
+
+    res.send(mentors);
+  })
+  .put((req, res) => {
+    // eslint-disable-next-line radix
+    const mentor = mentors.find((ment) => ment.id === parseInt(req.params.id));
+
+    if (!mentor) return res.status(404).send('There is user with that ID');
+
+    /*
+      Updating only one property in the mentor object
+    */
+    if (req.body.expertize && !req.body.name && !req.body.userType) {
+      mentor.expertize = req.body.expertize;
+    }
+
+    if (!req.body.expertize && req.body.name && !req.body.userType) {
+      mentor.name = req.body.name;
+    }
+
+    if (!req.body.expertize && !req.body.name && req.body.userType) {
+      mentor.userType = req.body.userType;
+    }
+
+    /*
+      Updating two properties in the mentor object
+    */
+
+    if (req.body.expertize && !req.body.name && req.body.userType) {
+      mentor.expertize = req.body.expertize;
+      mentor.userType = req.body.userType;
+    }
+
+    if (!req.body.expertize && req.body.name && req.body.userType) {
+      mentor.userType = req.body.userType;
+      mentor.name = req.body.name;
+    }
+
+    if (req.body.expertize && req.body.name && !req.body.userType) {
+      mentor.name = req.body.name;
+      mentor.expertize = req.body.expertize;
+    }
+
+    /*
+      Updating all the properties in the mentor object
+    */
+    if (req.body.name && req.body.expertize
+      && req.body.userType) {
+      mentor.name = req.body.name;
+      mentor.expertize = req.body.expertize;
+      mentor.userType = req.body.userType;
+    }
 
     res.send(mentors);
   });
