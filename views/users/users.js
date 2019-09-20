@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 /* eslint-disable eqeqeq */
 /* eslint-disable consistent-return */
 /* eslint-disable no-undef */
@@ -57,6 +58,45 @@ userRouter.route('/users')
     };
 
     users.push(user);
+    res.send(users);
+  });
+
+userRouter.route('/users/:id')
+  .get((req, res) => {
+    const user = users.find((userOne) => userOne.id === parseInt(req.params.id));
+
+    if (!user) return res.status(400).send('User does not exist');
+
+    res.send(user);
+  })
+  .delete((req, res) => {
+    const user = users.find((use) => use.id === parseInt(req.params.id));
+
+    if (!user) return res.status(400).send('User does not exist');
+
+    const index = users.indexOf(user);
+    users.splice(index, 1);
+
+    res.send(users);
+  })
+  .put((req, res) => {
+    const user = users.find((use) => use.id === parseInt(req.params.id));
+
+    if (!user) return res.status(400).send('User does not exist');
+
+    if (req.body.firstName && req.body.lastName) {
+      user.firstName = req.body.firstName;
+      user.lastName = req.body.lastName;
+    }
+
+    if (req.body.firstName && !req.body.lastName) {
+      user.firstName = req.body.firstName;
+    }
+
+    if (!req.body.firstName && req.body.lastName) {
+      user.lastName = req.body.lastName;
+    }
+
     res.send(users);
   });
 
