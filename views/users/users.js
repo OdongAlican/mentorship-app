@@ -5,6 +5,7 @@
 const userRouter = require('express').Router();
 const userController = require('../../controllers/userController');
 
+userRouter.param('id', userController.params);
 
 userRouter.route('/users')
   .get(userController.get)
