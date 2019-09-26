@@ -11,9 +11,9 @@ userRouter.route('/users')
   .get(userController.get)
   .post(userController.post);
 
-userRouter.route('/users/:_id')
+userRouter.route('/users/:id')
   .get(userController.getOne)
-  .delete(userController.post)
+  .delete(userController.delete)
   .put(userController.put);
 
 module.exports = userRouter;

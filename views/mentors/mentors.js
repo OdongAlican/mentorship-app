@@ -4,6 +4,9 @@
 const mentorRouter = require('express').Router();
 const mentorController = require('../../controllers/mentorController');
 
+mentorRouter.param('id', mentorController.params);
+
+
 mentorRouter.route('/mentors')
   .get(mentorController.get)
   .post(mentorController.post);

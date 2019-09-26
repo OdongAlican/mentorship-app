@@ -1,17 +1,21 @@
+/* eslint-disable no-else-return */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable func-names */
 /* eslint-disable no-return-assign */
 const _ = require('lodash');
 const mentorModel = require('../Models/mentorModel');
 
-exports.params = function (req, res, id) {
+exports.params = function (req, res, next, id) {
   mentorModel.findById(id)
     .then((mentor) => {
       if (!mentor) {
-        return res.status(400).send('There is no mentor with that id');
+        res.status(400).send('There is no mentor with that id');
+      } else {
+        req.mentor = mentor;
+        next();
       }
-      return req.mentor = mentor;
     }, (err) => {
+      res.status(400).send('There is no mentor with that id');
       res.send(err);
     });
 };

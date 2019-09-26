@@ -9,10 +9,12 @@ const mentorSchema = new Schema({
   name: {
     type: String,
     min: 3,
+    required: true,
   },
   expertize: {
     type: String,
     min: 3,
+    required: true,
   },
 });
 
