@@ -4,7 +4,6 @@
 /* eslint-disable radix */
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
-/* eslint-disable no-console */
 const userModel = require('../Models/userModel');
 const _ = require('lodash');
 
@@ -18,6 +17,8 @@ exports.params = function (req, res, next, id) {
         next();
       }
     }, (err) => {
+      res.status(400).send('No user with that Particular id');
+
       res.send(err);
     });
 };
@@ -49,10 +50,9 @@ exports.getOne = function (req, res) {
 };
 
 exports.delete = function (req, res) {
-  const user = req.user;
-  user.remove((err, removed) => {
+  userModel.remove((req.user), (err, removed) => {
     if (err) {
-      res.status(400).send('no user with that id');
+      res.status(400).send('user not updated');
     } else {
       res.json(removed);
     }
