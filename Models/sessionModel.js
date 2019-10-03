@@ -5,9 +5,10 @@ const { Schema } = mongoose;
 
 
 const sessionModel = new Schema({
-  name: {
-    type: String,
-    required: true,
+  name: String,
+  mentor: {
+    type: Schema.Types.ObjectId,
+    ref: 'Mentors',
   },
   start: {
     type: String,
