@@ -16,6 +16,14 @@ const mentorSchema = new Schema({
     min: 3,
     required: true,
   },
+  sessions: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'sessions',
+    },
+  ],
+}, {
+  usePushEach: true,
 });
 
 

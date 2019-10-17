@@ -1,12 +1,17 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-console */
 /* eslint-disable no-else-return */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable func-names */
 /* eslint-disable no-return-assign */
 const _ = require('lodash');
 const mentorModel = require('../Models/mentorModel');
+const SessionModel = require('../Models/sessionModel');
 
 exports.params = function (req, res, next, id) {
   mentorModel.findById(id)
+    .populate('sessions')
+    .exec()
     .then((mentor) => {
       if (!mentor) {
         res.status(400).send('There is no mentor with that id');
@@ -74,4 +79,25 @@ exports.delete = function (req, res) {
 
     return res.json(removed);
   });
+};
+
+exports.getMentorSessions = async function (req, res) {
+  const mentor = await req.mentor;
+
+  res.json(mentor);
+};
+
+exports.newMentorSessions = function (req, res) {
+  const mentorOne = req.mentor;
+  const newSession = new SessionModel(req.body);
+
+  newSession.mentor = mentorOne;
+
+  newSession.save();
+
+  mentorOne.sessions.push(newSession);
+
+  mentorOne.save();
+
+  res.json(newSession);
 };

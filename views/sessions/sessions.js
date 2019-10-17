@@ -4,12 +4,12 @@ const express = require('express');
 const sessionController = require('../../controllers/sessionController');
 
 const sessionRouter = express.Router();
+sessionRouter.param('id', sessionController.params);
 
 
-// creating mentorship session
 sessionRouter.route('/mentorshipsessions')
-.post(sessionController.post)
-.get(sessionController.get);
+.get(sessionController.get)
+.post(sessionController.post);
 
 sessionRouter.route('/mentorshipsessions/:id')
 .put(sessionController.put)

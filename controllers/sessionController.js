@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable import/order */
@@ -38,6 +39,7 @@ exports.get = function (req, res) {
 
 exports.post = function (req, res) {
   const newsession = req.body;
+  newsession.mentor = req.mentor._id;
 
   sessionModel.create(newsession)
     .then((session) => {

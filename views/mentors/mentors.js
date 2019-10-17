@@ -16,4 +16,8 @@ mentorRouter.route('/mentors/:id')
   .put(mentorController.update)
   .delete(mentorController.delete);
 
+mentorRouter.route('/mentors/:id/sessions')
+  .get(mentorController.getMentorSessions)
+  .post(mentorController.newMentorSessions);
+
 module.exports = mentorRouter;
