@@ -1,9 +1,4 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-console */
-/* eslint-disable no-else-return */
-/* eslint-disable prefer-destructuring */
-/* eslint-disable func-names */
-/* eslint-disable no-return-assign */
+
 const _ = require('lodash');
 const mentorModel = require('../Models/mentorModel');
 const SessionModel = require('../Models/sessionModel');
@@ -81,23 +76,45 @@ exports.delete = function (req, res) {
   });
 };
 
-exports.getMentorSessions = async function (req, res) {
-  const mentor = await req.mentor;
-
-  res.json(mentor);
-};
-
 exports.newMentorSessions = function (req, res) {
-  const mentorOne = req.mentor;
+  
+  const mentorId = req.params.userId;
+
   const newSession = new SessionModel(req.body);
+  
 
-  newSession.mentor = mentorOne;
+  mentorModel.findOne({_id: mentorId}, function (err, foundMentor) {
+    if (err) return err;
 
-  newSession.save();
+    foundMentor.sessions.push(newSession);
+    newSession.mentor = foundMentor
+    newSession.save(function (err, savedSession) {
+      if (err) return err;
+      res.json(savedSession)
+    })
+    foundMentor.save(function (err) {
+      if (err) return err;
+    });
+  });
 
-  mentorOne.sessions.push(newSession);
-
-  mentorOne.save();
-
-  res.json(newSession);
 };
+
+exports.updateSession = function(req, res){
+  
+  var mentorId = req.params.userId;
+  var sessionId = req.params.sessionId;
+
+  mentorModel.findOne({_id: mentorId}, function (err, foundMentor) {
+    if(err) return err;
+
+    var foundSession = foundMentor.sessions.id(sessionId);
+
+    const updateSession = req.body;
+
+    _.merge(updateSession, foundSession);
+
+    foundMentor.save(function (err, savedUser) {
+      res.json(foundSession);
+    });
+  });
+}
