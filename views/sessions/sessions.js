@@ -9,11 +9,16 @@ sessionRouter.param('id', sessionController.params);
 
 sessionRouter.route('/mentorshipsessions')
 .get(sessionController.get)
-.post(sessionController.post);
 
 sessionRouter.route('/mentorshipsessions/:id')
-.put(sessionController.put)
 .delete(sessionController.delete)
 .get(sessionController.getOne);
+
+sessionRouter.route('/mentors/:userId/sessions')
+.post(sessionController.post);
+
+sessionRouter.route('/mentors/:mentorId/sessions/:sessionId')
+.put(sessionController.update);
+
 
 module.exports = sessionRouter;

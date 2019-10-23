@@ -3,7 +3,7 @@ const { Schema } = require('mongoose');
 const mongoose = require('mongoose');
 
 
-mongoose.connect('mongodb://localhost/trial');
+mongoose.connect('mongodb://localhost/mentorapp');
 const userSchema = new Schema({
   firstName: {
     type: String,

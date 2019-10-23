@@ -1,7 +1,6 @@
 
 const _ = require('lodash');
 const mentorModel = require('../Models/mentorModel');
-const SessionModel = require('../Models/sessionModel');
 
 exports.params = function (req, res, next, id) {
   mentorModel.findById(id)
@@ -75,46 +74,3 @@ exports.delete = function (req, res) {
     return res.json(removed);
   });
 };
-
-exports.newMentorSessions = function (req, res) {
-  
-  const mentorId = req.params.userId;
-
-  const newSession = new SessionModel(req.body);
-  
-
-  mentorModel.findOne({_id: mentorId}, function (err, foundMentor) {
-    if (err) return err;
-
-    foundMentor.sessions.push(newSession);
-    newSession.mentor = foundMentor
-    newSession.save(function (err, savedSession) {
-      if (err) return err;
-      res.json(savedSession)
-    })
-    foundMentor.save(function (err) {
-      if (err) return err;
-    });
-  });
-
-};
-
-exports.updateSession = function(req, res){
-  
-  var mentorId = req.params.userId;
-  var sessionId = req.params.sessionId;
-
-  mentorModel.findOne({_id: mentorId}, function (err, foundMentor) {
-    if(err) return err;
-
-    var foundSession = foundMentor.sessions.id(sessionId);
-
-    const updateSession = req.body;
-
-    _.merge(updateSession, foundSession);
-
-    foundMentor.save(function (err, savedUser) {
-      res.json(foundSession);
-    });
-  });
-}

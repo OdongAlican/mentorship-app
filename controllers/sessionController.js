@@ -1,15 +1,9 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable prefer-destructuring */
-/* eslint-disable import/order */
-/* eslint-disable radix */
-/* eslint-disable consistent-return */
-/* eslint-disable func-names */
-const sessionModel = require('../Models/sessionModel');
+const mentorModel = require('../Models/mentorModel');
+const SessionModel = require('../Models/SessionModel');
 const _ = require('lodash');
 
 exports.params = function (req, res, next, id) {
-  sessionModel.findById(id)
+  SessionModel.findById(id)
     .populate('mentor')
     .exec()
     .then((session) => {
@@ -27,23 +21,11 @@ exports.params = function (req, res, next, id) {
 };
 
 exports.get = function (req, res) {
-  sessionModel.find({})
+  SessionModel.find({})
     .populate('mentor')
     .exec()
     .then((sessions) => {
       res.json(sessions);
-    }, (err) => {
-      res.send(err);
-    });
-};
-
-exports.post = function (req, res) {
-  const newsession = req.body;
-  newsession.mentor = req.mentor._id;
-
-  sessionModel.create(newsession)
-    .then((session) => {
-      res.json(session);
     }, (err) => {
       res.send(err);
     });
@@ -56,7 +38,7 @@ exports.getOne = function (req, res) {
 };
 
 exports.delete = function (req, res) {
-  sessionModel.remove((req.session), (err, removed) => {
+  SessionModel.remove((req.session), (err, removed) => {
     if (err) {
       res.status(400).send('session not updated');
     } else {
@@ -65,18 +47,51 @@ exports.delete = function (req, res) {
   });
 };
 
-exports.put = function (req, res) {
-  const session = req.session;
 
-  const updatesession = req.body;
+exports.post = function (req, res) {
+  
+  const mentorId = req.params.userId;
 
-  _.merge(session, updatesession);
+  const newSession = new SessionModel(req.body);
+  
 
-  session.save((err, saved) => {
-    if (err) {
-      res.status(400).send('session not updated');
-    } else {
-      res.json(saved);
-    }
+  mentorModel.findOne({_id: mentorId}, function (err, foundMentor) {
+    if (err) return err;
+
+    foundMentor.sessions.push(newSession);
+    newSession.mentor = foundMentor
+    newSession.save(function (err, savedSession) {
+      if (err) return err;
+      res.json(savedSession)
+    })
+    foundMentor.save(function (err) {
+      if (err) return err;
+    });
   });
+
 };
+
+exports.update = function (req, res) {
+  const newMentorId = req.params.mentorId;
+  const sessionsId = req.params.sessionId;  
+  const newSession = req.body
+
+  SessionModel.findOne({_id: sessionsId}, function (err, session) {
+    if (err) return err;
+  
+  mentorModel.findById(newMentorId)
+  .then(newMentor => {
+      if (!newMentor) return res.status(400).send('No mentor with that Particular id');
+        
+      session.mentor = newMentor;
+
+    _.merge(session, newSession);
+
+      session.save((err, saved) => {
+        if (err) return err
+
+        res.json(saved) 
+      })      
+  })
+  });
+}
