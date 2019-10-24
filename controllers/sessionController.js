@@ -49,17 +49,14 @@ exports.delete = function( req, res ) {
 };
 
 exports.post = function( req, res ) {
-  
+    
     const mentorId = req.params.userId,
-
         newSession = new SessionModel( req.body );
-  
 
     mentorModel.findOne( { "_id": mentorId }, ( err, foundMentor ) => {
         if ( err ) {
             return err;
         }
-
         foundMentor.sessions.push( newSession );
         newSession.mentor = foundMentor;
         newSession.save( ( err, savedSession ) => {
@@ -86,56 +83,45 @@ exports.update = function( req, res ) {
         if ( err ) {
             return err;
         }
-
         const oldMentorID = session.mentor._id;
 
         if( oldMentorID !== newMentorId ) {
-
             mentorModel.findById( oldMentorID )
                 .then( ( oldMentor ) => {
                     if ( !oldMentor ) {
                         return res.status( 400 ).send( "No mentor with that Particular id" );
                     }
-
                     const index = oldMentor.sessions.indexOf( sessionsId, 0 );
-                        
-                    if( !index ) {
-                        res.status( 404 ).send( "No session with that particular index" );
-                    }
 
+                    if( !index ) {
+                        return err;
+                    }
                     oldMentor.sessions.splice( index, 1 );
-                        
                     oldMentor.save( ( err ) => {
                         if( err ) {
                             return err;
                         }
                     } );
-
                 } );
         }
           
         mentorModel.findById( newMentorId )
             .then( ( newMentor ) => {
                 if ( !newMentor ) {
-                    return res.status( 400 ).send( "No mentor with that Particular id" );
+                    return err;
                 }
-
                 newMentor.sessions.push( session );
                 newMentor.save( ( err ) => {
                     if( err ) {
                         return err;
                     }
                 } );
-
                 session.mentor = newMentor;
-
                 _.merge( session, newSession );
-
                 session.save( ( err, saved ) => {
                     if ( err ) {
                         return err;
                     }
-
                     res.json( saved );
                 } );
             } );
