@@ -84,26 +84,23 @@ exports.update = function( req, res ) {
             return err;
         }
         const oldMentorID = session.mentor._id;
-
-        if( oldMentorID !== newMentorId ) {
             mentorModel.findById( oldMentorID )
                 .then( ( oldMentor ) => {
                     if ( !oldMentor ) {
                         return res.status( 400 ).send( "No mentor with that Particular id" );
                     }
-                    const index = oldMentor.sessions.indexOf( sessionsId, 0 );
 
-                    if( !index ) {
-                        return err;
+                    var index = oldMentor.sessions.indexOf(sessionsId);
+                    if (index > -1) {
+                        oldMentor.sessions.splice(index, 1);
                     }
-                    oldMentor.sessions.splice( index, 1 );
+
                     oldMentor.save( ( err ) => {
                         if( err ) {
                             return err;
                         }
                     } );
                 } );
-        }
           
         mentorModel.findById( newMentorId )
             .then( ( newMentor ) => {
