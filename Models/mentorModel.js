@@ -3,8 +3,6 @@ const mongoose = require( "mongoose" ),
 
     { Schema } = mongoose;
 
-mongoose.connect( "mongodb://localhost/mentorapp" );
-
 const mentorSchema = new Schema( {
     "name": {
         "type": String,

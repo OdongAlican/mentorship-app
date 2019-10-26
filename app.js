@@ -1,9 +1,19 @@
 /* eslint-disable no-console */
 /* eslint-disable one-var */
 const express = require( "express" );
-const bodyParser = require( "body-parser" ),
+const bodyParser = require( "body-parser" );
+const app = express();
 
-    app = express();
+const dotenv = require( "dotenv" );
+const mongoose = require( "mongoose" );
+
+dotenv.config();
+
+mongoose.connect(
+    process.env.DB_CONNECT,
+    { "useNewUrlParser": true },
+    () => console.log( "connected to Database!" ) );
+
 
 app.use( bodyParser.urlencoded( { "extended": true } ) );
 app.use( bodyParser.json() );

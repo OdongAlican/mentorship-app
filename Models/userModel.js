@@ -2,8 +2,6 @@
 const { Schema } = require( "mongoose" );
 const mongoose = require( "mongoose" );
 
-
-mongoose.connect( "mongodb://localhost/mentorapp" );
 const userSchema = new Schema( {
     "firstName": {
         "type": String,
@@ -15,7 +13,8 @@ const userSchema = new Schema( {
     },
     "password": {
         "type": String,
-        "required": true
+        "required": true,
+        "max": 1024
     }
 } );
 

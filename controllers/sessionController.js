@@ -3,8 +3,8 @@ const mentorModel = require( "../Models/mentorModel" );
 const SessionModel = require( "../Models/SessionModel" );
 const _ = require( "lodash" );
 
-exports.params = function( req, res, next, id ) {
-    SessionModel.findById( id )
+exports.params = async function( req, res, next, id ) {
+    await SessionModel.findById( id )
         .populate( "mentor" )
         .exec()
         .then( ( session ) => {
@@ -21,8 +21,8 @@ exports.params = function( req, res, next, id ) {
         } );
 };
 
-exports.get = function( req, res ) {
-    SessionModel.find( {} )
+exports.get = async function( req, res ) {
+    await SessionModel.find( {} )
         .populate( "mentor" )
         .exec()
         .then( ( sessions ) => {
@@ -32,14 +32,14 @@ exports.get = function( req, res ) {
         } );
 };
 
-exports.getOne = function( req, res ) {
-    const session = req.session;
+exports.getOne = async function( req, res ) {
+    const session = await req.session;
 
     res.json( session );
 };
 
-exports.delete = function( req, res ) {
-    SessionModel.remove( ( req.session ), ( err, removed ) => {
+exports.delete = async function( req, res ) {
+    await SessionModel.remove( ( req.session ), ( err, removed ) => {
         if ( err ) {
             res.status( 400 ).send( "session not updated" );
         } else {
@@ -48,24 +48,25 @@ exports.delete = function( req, res ) {
     } );
 };
 
-exports.post = function( req, res ) {
+exports.post = async function( req, res ) {
     
-    const mentorId = req.params.userId,
-        newSession = new SessionModel( req.body );
+    const mentorId = await req.params.userId,
+        mentorObject = await req.body,
+        newSession = new SessionModel( mentorObject );
 
-    mentorModel.findOne( { "_id": mentorId }, ( err, foundMentor ) => {
+    await mentorModel.findOne( { "_id": mentorId }, async( err, foundMentor ) => {
         if ( err ) {
             return err;
         }
         foundMentor.sessions.push( newSession );
         newSession.mentor = foundMentor;
-        newSession.save( ( err, savedSession ) => {
+        await newSession.save( ( err, savedSession ) => {
             if ( err ) {
                 return err;
             }
             res.json( savedSession );
         } );
-        foundMentor.save( ( err ) => {
+        await foundMentor.save( ( err ) => {
             if ( err ) {
                 return err;
             }
@@ -84,23 +85,25 @@ exports.update = function( req, res ) {
             return err;
         }
         const oldMentorID = session.mentor._id;
-            mentorModel.findById( oldMentorID )
-                .then( ( oldMentor ) => {
-                    if ( !oldMentor ) {
-                        return res.status( 400 ).send( "No mentor with that Particular id" );
-                    }
 
-                    var index = oldMentor.sessions.indexOf(sessionsId);
-                    if (index > -1) {
-                        oldMentor.sessions.splice(index, 1);
-                    }
+        mentorModel.findById( oldMentorID )
+            .then( ( oldMentor ) => {
+                if ( !oldMentor ) {
+                    return res.status( 400 ).send( "No mentor with that Particular id" );
+                }
 
-                    oldMentor.save( ( err ) => {
-                        if( err ) {
-                            return err;
-                        }
-                    } );
+                let index = oldMentor.sessions.indexOf( sessionsId );
+
+                if ( index > -1 ) {
+                    oldMentor.sessions.splice( index, 1 );
+                }
+
+                oldMentor.save( ( err ) => {
+                    if( err ) {
+                        return err;
+                    }
                 } );
+            } );
           
         mentorModel.findById( newMentorId )
             .then( ( newMentor ) => {

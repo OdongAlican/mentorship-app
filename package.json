@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +18,9 @@
     "supertest": "^4.0.2"
   },
   "dependencies": {
+    "@hapi/joi": "^16.1.7",
     "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "mongoose": "^5.7.5"
