@@ -1,6 +1,7 @@
 
 const userModel = require( "../Models/userModel" );
 const _ = require( "lodash" );
+const bcrypt = require("bcryptjs");
 const { validateUser } = require( "../validation/validation" );
 
 exports.params = async function( req, res, next, id ) {
@@ -35,9 +36,14 @@ exports.post = async function( req, res ) {
         return res.status( 404 ).send( error.details[ 0 ].message );
     }
 
-    const newUser = await req.body;
+    const salt = await bcrypt.genSalt(10),
+        hashPassword = await bcrypt.hash(req.body.password, salt);
 
-    await userModel.create( newUser )
+    await userModel.create( {
+        "firstName":req.body.firstName,
+        "lastName":req.body.lastName,
+        "password":hashPassword
+    } )
         .then( ( user ) => {
             res.json( user );
         }, ( err ) => {

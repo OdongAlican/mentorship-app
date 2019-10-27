@@ -1,4 +1,4 @@
-const Joi = require( "joi" ),
+const Joi = require( "@hapi/joi" ),
     validateMentor = ( data ) => {
         const schema = {
             "name": Joi.string().min( 6 ).required(),
