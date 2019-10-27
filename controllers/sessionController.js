@@ -2,6 +2,7 @@
 const mentorModel = require( "../Models/mentorModel" );
 const SessionModel = require( "../Models/SessionModel" );
 const _ = require( "lodash" );
+const { validateSession } = require( "../validation/validation" );
 
 exports.params = async function( req, res, next, id ) {
     await SessionModel.findById( id )
@@ -49,7 +50,13 @@ exports.delete = async function( req, res ) {
 };
 
 exports.post = async function( req, res ) {
-    
+    const { error } = validateSession( req.body );
+
+    if( error ) {
+        return res.status( 400 ).send( error.details[ 0 ].message )
+        ;
+    }
+
     const mentorId = await req.params.userId,
         mentorObject = await req.body,
         newSession = new SessionModel( mentorObject );
@@ -76,6 +83,12 @@ exports.post = async function( req, res ) {
 };
 
 exports.update = function( req, res ) {
+    const { error } = validateSession( req.body );
+
+    if( error ) {
+        return res.status( 400 ).send( error.details[ 0 ].message );
+    }
+    
     const newMentorId = req.params.mentorId,
         sessionsId = req.params.sessionId,
         newSession = req.body;

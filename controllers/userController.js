@@ -1,6 +1,7 @@
 
 const userModel = require( "../Models/userModel" );
 const _ = require( "lodash" );
+const { validateUser } = require( "../validation/validation" );
 
 exports.params = async function( req, res, next, id ) {
     await userModel.findById( id )
@@ -28,6 +29,12 @@ exports.get = async function( req, res ) {
 };
 
 exports.post = async function( req, res ) {
+    const { error } = validateUser( req.body );
+
+    if( error ) {
+        return res.status( 404 ).send( error.details[ 0 ].message );
+    }
+
     const newUser = await req.body;
 
     await userModel.create( newUser )
@@ -55,8 +62,13 @@ exports.delete = async function( req, res ) {
 };
 
 exports.put = async function( req, res ) {
-    const user = await req.user,
+    const { error } = validateUser( req.body );
 
+    if( error ) {
+        return res.status( 404 ).send( error.details[ 0 ].message );
+    }
+    
+    const user = await req.user,
         updateUser = await req.body;
 
     _.merge( user, updateUser );

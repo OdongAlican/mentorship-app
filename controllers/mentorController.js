@@ -1,6 +1,7 @@
 
 const _ = require( "lodash" );
 const mentorModel = require( "../Models/mentorModel" );
+const { validateMentor } = require( "../validation/validation" );
 
 exports.params = async function( req, res, next, id ) {
     await mentorModel.findById( id )
@@ -29,6 +30,12 @@ exports.get = async function( req, res ) {
 };
 
 exports.post = async function( req, res ) {
+    const { error } = validateMentor( req.body );
+
+    if( error ) {
+        return res.status( 404 ).send( error.details[ 0 ].message );
+    }
+
     const newMentor = await req.body;
 
     await mentorModel.create( newMentor )
@@ -46,8 +53,13 @@ exports.getOne = async function( req, res ) {
 };
 
 exports.update = async function( req, res ) {
-    const mentor = await req.mentor,
+    const { error } = validateMentor( req.body );
 
+    if( error ) {
+        return res.status( 404 ).send( error.details[ 0 ].message );
+    }
+    
+    const mentor = await req.mentor,
         updateMentor = await req.body;
 
     _.merge( mentor, updateMentor );
