@@ -1,8 +1,8 @@
 
 const userModel = require( "../Models/userModel" );
 const _ = require( "lodash" );
-const bcrypt = require("bcryptjs");
-const { validateUser } = require( "../validation/validation" );
+const bcrypt = require( "bcryptjs" );
+const { validateUser, userLogin } = require( "../validation/validation" );
 
 exports.params = async function( req, res, next, id ) {
     await userModel.findById( id )
@@ -36,13 +36,13 @@ exports.post = async function( req, res ) {
         return res.status( 404 ).send( error.details[ 0 ].message );
     }
 
-    const salt = await bcrypt.genSalt(10),
-        hashPassword = await bcrypt.hash(req.body.password, salt);
+    const salt = await bcrypt.genSalt( 10 ),
+        hashPassword = await bcrypt.hash( req.body.password, salt );
 
     await userModel.create( {
-        "firstName":req.body.firstName,
-        "lastName":req.body.lastName,
-        "password":hashPassword
+        "firstName": req.body.firstName,
+        "lastName": req.body.lastName,
+        "password": hashPassword
     } )
         .then( ( user ) => {
             res.json( user );
@@ -86,4 +86,24 @@ exports.put = async function( req, res ) {
             res.json( saved );
         }
     } );
+};
+
+
+exports.login = async function( req, res ) {
+    const { error } = userLogin( req.body );
+
+    if( error ) {
+        return res.status( 404 ).send( error.details[ 0 ].message );
+    }
+
+    const user = await userModel.findOne( { "lastName": req.body.lastName } );
+    if( !user ) {
+        return res.status( 400 ).send( "Name not correct" );
+    }
+    const validPassword = await bcrypt.compare( req.body.password, user.password );
+    if( !validPassword ) {
+        return res.status( 400 ).send( "Password not correct" );
+    }
+    
+    res.send( "Logged In" );
 };

@@ -9,6 +9,9 @@ userRouter.route( "/users" )
     .get( userController.get )
     .post( userController.post );
 
+userRouter.route( "/users/login" )
+    .post( userController.login );
+
 userRouter.route( "/users/:id" )
     .get( userController.getOne )
     .delete( userController.delete )

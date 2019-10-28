@@ -26,8 +26,29 @@ const Joi = require( "@hapi/joi" ),
         };
 
         return Joi.validate( data, schema );
-    };
+    },
+
+    userLogin = ( data ) => {
+        const schema = {
+            "lastName": Joi.string().min( 6 ).max( 40 ),
+            "password": Joi.string().min( 6 ).max( 1024 )
+        };
+
+        return Joi.validate( data, schema );
+    },
+    mentorLogin = ( data ) => {
+        const schema = {
+            "name": Joi.string().min( 6 ).required(),
+            "expertize": Joi.string().min( 6 ).max( 40 )
+        };
+
+        return Joi.validate( data, schema );
+    }
 
 module.exports.validateMentor = validateMentor;
 module.exports.validateUser = validateUser;
 module.exports.validateSession = validateSession;
+module.exports.userLogin = userLogin;
+module.exports.mentorLogin = mentorLogin;
+
+

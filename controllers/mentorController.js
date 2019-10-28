@@ -1,7 +1,7 @@
 
 const _ = require( "lodash" );
 const mentorModel = require( "../Models/mentorModel" );
-const { validateMentor } = require( "../validation/validation" );
+const { validateMentor, mentorLogin } = require( "../validation/validation" );
 
 exports.params = async function( req, res, next, id ) {
     await mentorModel.findById( id )
@@ -83,4 +83,23 @@ exports.delete = async function( req, res ) {
 
         return res.json( removed );
     } );
+};
+
+exports.login = async function( req, res ) {
+    const { error } = mentorLogin( req.body );
+
+    if( error ) {
+        return res.status( 404 ).send( error.details[ 0 ].message );
+    }
+
+    const user = await mentorModel.findOne( { "lastName": req.body.lastName } );
+    if( !user ) {
+        return res.status( 400 ).send( "Name not correct" );
+    }
+    const validPassword = await bcrypt.compare( req.body.password, user.password );
+    if( !validPassword ) {
+        return res.status( 400 ).send( "Password not correct" );
+    }
+    
+    res.send( "Logged In" );
 };
