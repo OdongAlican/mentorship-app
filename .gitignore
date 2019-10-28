@@ -1,3 +1,5 @@
 node_modules
-*.json
-*.env
+package.json
+package-lock.json
+.env
+.eslintrc.json
