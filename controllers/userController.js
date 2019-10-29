@@ -1,6 +1,7 @@
 
 const userModel = require( "../Models/userModel" );
-const _ = require( "lodash" );
+const _ = require( "lodash" ),
+    jwt = require( "jsonwebtoken" );
 const bcrypt = require( "bcryptjs" );
 const { validateUser, userLogin } = require( "../validation/validation" );
 
@@ -97,13 +98,18 @@ exports.login = async function( req, res ) {
     }
 
     const user = await userModel.findOne( { "lastName": req.body.lastName } );
+
     if( !user ) {
         return res.status( 400 ).send( "Name not correct" );
     }
     const validPassword = await bcrypt.compare( req.body.password, user.password );
+
     if( !validPassword ) {
         return res.status( 400 ).send( "Password not correct" );
     }
+
+    const token = jwt.sign( { "_id": user._id }, process.env.TOKEN_SECRET );
+
+    res.header( "auth_token", token ).send( token );
     
-    res.send( "Logged In" );
 };

@@ -62,7 +62,7 @@ exports.post = async function( req, res ) {
         newSession = new SessionModel( mentorObject );
 
     await mentorModel.findOne( { "_id": mentorId }, async( err, foundMentor ) => {
-        if ( err ) {
+        if ( !foundMentor ) {
             return err;
         }
         foundMentor.sessions.push( newSession );
