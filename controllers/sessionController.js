@@ -94,7 +94,7 @@ exports.update = function( req, res ) {
         newSession = req.body;
 
     SessionModel.findOne( { "_id": sessionsId }, ( err, session ) => {
-        if ( err ) {
+        if ( !session ) {
             return err;
         }
         const oldMentorID = session.mentor._id;

@@ -1,7 +1,11 @@
 const Joi = require( "@hapi/joi" ),
     validateMentor = ( data ) => {
         const schema = {
-            "name": Joi.string().min( 6 ).required(),
+            "title": Joi.string().min( 2 ).required(),
+            "firstName": Joi.string().min( 6 ).required(),
+            "lastName": Joi.string().min( 6 ).required(),
+            "password": Joi.string().min( 6 ).max( 1024 ).required(),
+            "email": Joi.string().email().required(),
             "expertize": Joi.string().min( 6 ).max( 40 )
         };
 
@@ -10,9 +14,11 @@ const Joi = require( "@hapi/joi" ),
 
     validateUser = ( data ) => {
         const schema = {
+            "title": Joi.string().min( 2 ).required(),
             "firstName": Joi.string().min( 6 ).required(),
-            "lastName": Joi.string().min( 6 ).max( 40 ),
-            "password": Joi.string().min( 6 ).max( 1024 )
+            "lastName": Joi.string().min( 6 ).max( 40 ).required(),
+            "email": Joi.string().email().required(),
+            "password": Joi.string().min( 6 ).max( 1024 ).required()
         };
 
         return Joi.validate( data, schema );
@@ -30,7 +36,7 @@ const Joi = require( "@hapi/joi" ),
 
     userLogin = ( data ) => {
         const schema = {
-            "lastName": Joi.string().min( 6 ).max( 40 ),
+            "email": Joi.string().min( 6 ).max( 40 ),
             "password": Joi.string().min( 6 ).max( 1024 )
         };
 
@@ -38,17 +44,16 @@ const Joi = require( "@hapi/joi" ),
     },
     mentorLogin = ( data ) => {
         const schema = {
-            "name": Joi.string().min( 6 ).required(),
-            "expertize": Joi.string().min( 6 ).max( 40 )
+            "email": Joi.string().min( 6 ).required(),
+            "password": Joi.string().min( 6 ).max( 40 )
         };
 
         return Joi.validate( data, schema );
-    }
+    };
 
 module.exports.validateMentor = validateMentor;
 module.exports.validateUser = validateUser;
 module.exports.validateSession = validateSession;
 module.exports.userLogin = userLogin;
 module.exports.mentorLogin = mentorLogin;
-
 

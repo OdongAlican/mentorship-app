@@ -41,9 +41,11 @@ exports.post = async function( req, res ) {
         hashPassword = await bcrypt.hash( req.body.password, salt );
 
     await userModel.create( {
+        "title": req.body.title,
         "firstName": req.body.firstName,
         "lastName": req.body.lastName,
-        "password": hashPassword
+        "password": hashPassword,
+        "email": req.body.email
     } )
         .then( ( user ) => {
             res.json( user );
@@ -97,7 +99,7 @@ exports.login = async function( req, res ) {
         return res.status( 404 ).send( error.details[ 0 ].message );
     }
 
-    const user = await userModel.findOne( { "lastName": req.body.lastName } );
+    const user = await userModel.findOne( { "email": req.body.email } );
 
     if( !user ) {
         return res.status( 400 ).send( "Name not correct" );

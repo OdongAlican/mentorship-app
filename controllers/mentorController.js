@@ -39,11 +39,14 @@ exports.post = async function( req, res ) {
     }
 
     const salt = await bcrypt.genSalt( 10 ),
-    hashPassword = await bcrypt.hash( req.body.expertize, salt );
+    hashPassword = await bcrypt.hash( req.body.password, salt );
 
     await mentorModel.create( {
-        "name": req.body.name,
-        "expertize": hashPassword
+        "firstName": req.body.firstName,
+        "lastName": req.body.lastName,
+        "expertize": req.body.expertize,
+        "password": hashPassword,
+        "email": req.body.email
     } )
         .then( ( mentor ) => {
             res.json( mentor );
@@ -98,12 +101,12 @@ exports.login = async function( req, res ) {
         return res.status( 404 ).send( error.details[ 0 ].message );
     }
 
-    const mentor = await mentorModel.findOne( { "name": req.body.name } );
+    const mentor = await mentorModel.findOne( { "email": req.body.email } );
     if( !mentor ) {
         return res.status( 400 ).send( "Name not correct" );
     }
-    const validExpertize = await bcrypt.compare( req.body.expertize, mentor.expertize );
-    if( !validExpertize ) {
+    const validPassword = await bcrypt.compare( req.body.password, mentor.password );
+    if( !validPassword ) {
         return res.status( 400 ).send( "Password not correct" );
     }
 
