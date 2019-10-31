@@ -3,7 +3,7 @@
 const express = require( "express" );
 const sessionController = require( "../../controllers/sessionController" ),
     sessionRouter = express.Router(),
-    verify = require("../../verification/userVerification")
+    { verifyUser } = require( "../../verification/userVerification" );
 
 sessionRouter.param( "id", sessionController.params );
 
@@ -16,7 +16,7 @@ sessionRouter.route( "/mentorshipsessions/:id" )
     .get( sessionController.getOne );
 
 sessionRouter.route( "/mentors/:userId/sessions" )
-    .post( verify, sessionController.post );
+    .post( verifyUser, sessionController.post );
 
 sessionRouter.route( "/mentors/:mentorId/sessions/:sessionId" )
     .put( sessionController.update );

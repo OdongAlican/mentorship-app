@@ -1,5 +1,7 @@
 
 const _ = require( "lodash" );
+const bcrypt = require( "bcryptjs" ),
+    jwt = require("jsonwebtoken");
 const mentorModel = require( "../Models/mentorModel" );
 const { validateMentor, mentorLogin } = require( "../validation/validation" );
 
@@ -36,9 +38,13 @@ exports.post = async function( req, res ) {
         return res.status( 404 ).send( error.details[ 0 ].message );
     }
 
-    const newMentor = await req.body;
+    const salt = await bcrypt.genSalt( 10 ),
+    hashPassword = await bcrypt.hash( req.body.expertize, salt );
 
-    await mentorModel.create( newMentor )
+    await mentorModel.create( {
+        "name": req.body.name,
+        "expertize": hashPassword
+    } )
         .then( ( mentor ) => {
             res.json( mentor );
         }, ( err ) => {
@@ -92,14 +98,16 @@ exports.login = async function( req, res ) {
         return res.status( 404 ).send( error.details[ 0 ].message );
     }
 
-    const user = await mentorModel.findOne( { "lastName": req.body.lastName } );
-    if( !user ) {
+    const mentor = await mentorModel.findOne( { "name": req.body.name } );
+    if( !mentor ) {
         return res.status( 400 ).send( "Name not correct" );
     }
-    const validPassword = await bcrypt.compare( req.body.password, user.password );
-    if( !validPassword ) {
+    const validExpertize = await bcrypt.compare( req.body.expertize, mentor.expertize );
+    if( !validExpertize ) {
         return res.status( 400 ).send( "Password not correct" );
     }
-    
-    res.send( "Logged In" );
+
+    const token = jwt.sign( { "_id": mentor._id }, process.env.TOKEN_SECRET_MENTOR );
+
+    res.header( "auth_token", token ).send( token );
 };

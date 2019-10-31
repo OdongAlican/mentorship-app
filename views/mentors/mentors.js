@@ -9,6 +9,9 @@ mentorRouter.param( "id", mentorController.params );
 mentorRouter.route( "/mentors" )
     .get( mentorController.get )
     .post( mentorController.post );
+    
+mentorRouter.route( "/mentors/login" )
+    .post( mentorController.login )
 
 mentorRouter.route( "/mentors/:id" )
     .get( mentorController.getOne )

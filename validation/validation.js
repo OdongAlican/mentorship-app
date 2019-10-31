@@ -21,8 +21,8 @@ const Joi = require( "@hapi/joi" ),
     validateSession = ( data ) => {
         const schema = {
             "name": Joi.string().min( 6 ).required(),
-            "start": Joi.string().min( 6 ).max( 40 ),
-            "end": Joi.string().min( 6 ).max( 1024 )
+            "start": Joi.date().required(),
+            "end": Joi.date().required()
         };
 
         return Joi.validate( data, schema );
